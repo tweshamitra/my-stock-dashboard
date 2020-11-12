@@ -13,7 +13,7 @@ Your parent should have created a github account for you. If not, please do so w
 ### Install git
 In order to start, we will need some sort of source control for our code. Source control is the practice of tracking and managing changes to your code.
 It provides us a history of development and helps resolve conflicts when merging contributions from multiple people. Every good development team has some way of managing
-source control. The reason source control is so importan is that allows developers to maintain a single source of truth. It helps to facilitate collaboration
+source control. The reason source control is so important is that it allows developers to maintain a single source of truth. It helps to facilitate collaboration
 and helps accelerate releases. Many developrs can work on the same codebase at the same time without stepping on each other's toes.
 
 One very popular source control management system is git, which is what we will be using for this workshop. So, make sure git is installed on your system.
