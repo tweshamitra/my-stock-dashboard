@@ -1,8 +1,8 @@
-In this workshop, we will create and deploy a python web application that will allow you to track companies stock information. If, at any time, you get lost of get behind, follow the instructions below as we will be going through this during the workshop. You can also come back to it after the workshop to go through it.
+In this workshop, we will create and deploy a python web application that will allow you to track companies stock information. If, at any time, you get lost or get behind, follow the instructions below as we will be going through this during the workshop. You can also come back to it after the workshop to go through it.
 
 ## Pre-requisites
 
-There are some prerequisites that need to be completed prior to starting this workshop. Have you parent ensure that each of these is met and if not, they should download or create these accounts for you. There is information below in case you ever decide to come back and complete this workshop.
+There are some prerequisites that need to be completed prior to starting this workshop. Have your parent ensure that each of these is met and if not, they should download or create these accounts for you. There is information below in case you ever decide to come back and complete this workshop.
 
 ### Install python
 Since this is a python workshop, you will need python installed on your system. Your parent can get that here: https://www.python.org/downloads/
