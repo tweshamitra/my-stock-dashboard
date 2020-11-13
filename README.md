@@ -441,8 +441,10 @@ API_TOKEN = os.environ['API_TOKEN']
 
 @app.route("/", methods=["GET","POST"])
 def dashboard():
+    select_companies = []
     if request.method == "POST":
         if request.form.get("ticker", None):
+            # the user gave us the exact ticker, let's just add it IFF it doesn't exist already
             ticker = request.form["ticker"]
             stocks = Stock.query.filter(Stock.name == ticker).all()
             if (len(stocks)) == 0:
@@ -452,53 +454,33 @@ def dashboard():
         elif request.form.get("company", None):
             response = requests.get(f"https://finnhub.io/api/v1/stock/symbol?exchange=US&token={API_TOKEN}")
             resp = json.loads(response.text)
-            select_companies = []
+            #we may get multiple matches, let's have user select which one they wanted to add
             for item in resp:
                 if request.form["company"].upper() in item["description"]:
                     select_companies.append(item)
-            if len(select_companies) > 1:
-                stocks = Stock.query.all()
-                mydata = []
-                mynews = []
-                for stock in stocks:
-                    _mydata = {"name":stock.name}
-                    url = f"https://finnhub.io/api/v1/quote?symbol={stock.name}&token={API_TOKEN}"
-                    resp = requests.get(url)
-                    _mydata["stock_price"] = resp.json()["c"]
-                    url = f"https://finnhub.io/api/v1/stock/profile2?symbol={stock.name}&token={API_TOKEN}"
-                    resp = requests.get(url).json()
-                    _mydata["weburl"] = resp["weburl"]
-                    url = f"https://finnhub.io/api/v1/company-news?symbol={stock.name}&from=2020-10-15&to=2020-10-20&token={API_TOKEN}"
-                    resp = requests.get(url).json()
-                    for article in resp:
-                        _mynews = {
-                            "headline": article["headline"],
-                            "link": article["url"]
-                        }
-                        mynews.append(_mynews)
-                    mydata.append(_mydata)
-                return render_template("index.html", select_companies=select_companies, data=mydata, news=mynews)
-            else:
+            if len(select_companies) == 0:
+                #normally, we would raise an error like a 404 here, but for now let's just pass
+                pass
+            elif len(select_companies) == 1:
+                # we got just one match, let's commit to db
                 stocks = Stock.query.filter(Stock.name == select_companies[0]["symbol"]).all()
                 if len(stocks) == 0:
                     stock = Stock(select_companies[0]["symbol"])
                     db.session.add(stock)
                     db.session.commit()
+    # always need to do the get so the page stays updated
     stocks = Stock.query.all()
     data = []
     for stock in stocks:
         _data = {
-                "name" : stock.name,
-                "news": []
-                }
-        url = f"https://finnhub.io/api/v1/quote?symbol={stock.name}&token={API_TOKEN}"
-        resp = requests.get(url)
-        _data["stock_price"] = resp.json()["c"]
-        url = f"https://finnhub.io/api/v1/stock/profile2?symbol={stock.name}&token={API_TOKEN}"
-        resp = requests.get(url).json()
+            "name" : stock.name,
+            "news": []
+        }
+        resp = requests.get(f"https://finnhub.io/api/v1/quote?symbol={stock.name}&token={API_TOKEN}").json()
+        _data["stock_price"] = resp["c"]
+        resp = requests.get(f"https://finnhub.io/api/v1/stock/profile2?symbol={stock.name}&token={API_TOKEN}").json()
         _data["weburl"] = resp["weburl"]
-        url = f"https://finnhub.io/api/v1/company-news?symbol={stock.name}&from=2020-11-05&to=2020-11-10&token={API_TOKEN}"
-        resp = requests.get(url).json()
+        resp = requests.get(f"https://finnhub.io/api/v1/company-news?symbol={stock.name}&from=2020-11-05&to=2020-11-10&token={API_TOKEN}").json()
         for article in resp:
             _news = {
                 "headline": article["headline"],
@@ -506,6 +488,8 @@ def dashboard():
             }
         _data["news"].append(_news)
         data.append(_data)
+    if len(select_companies) > 1:
+        return render_template("index.html", data=data, select_companies=select_companies)
     return render_template("index.html", data=data)
 
 if __name__ == '__main__':
