@@ -323,40 +323,53 @@ Create a folder called templates and a file inside it called index.html. Paste t
 
 <body>
     <div class="row">
-        <h1>Dashboard</h1>
-            <h2>Add a company</h2>
-            <form action="{{ url_for('dashboard') }}" method="post">
-                <input type="text" id="company" name="company"><input type="submit" value="Submit">
-            </form>
-            {% if select_companies %}
-            <p>Found multiple matching, select from the list below the company whose stock you want to add to your
-                watchlist:</p>
-            <form action="{{ url_for('dashboard') }}" method="post">
-                {% for company in select_companies %}
-                <input id={{company.description}} type="radio" name="ticker" value="{{company.symbol}}">
-                <label for={{company.description}}>{{company.description}}</label><br>
-                {% endfor %}
-                <input type="submit" value="Submit">
-            </form>
-            {% endif %}
-            <h2>Watchlist:</h2>
-            {% if data %}
-            {% for stock in data %}
-            <div class="card">
-                <h4><a href={{stock.weburl}}>{{stock.name}}:</a></h4>
-                <p>Share price: ${{stock.stock_price}}</p>
-                {% if stock.news %}
-                <ul>
-                    {% for article in stock.news %}
-                    <li><a href={{article.link}}>{{article.headline}}</a></li>
-                    {% endfor %}
-                </ul>
-                {% endif %}
-            </div>
+        <div class="header">
+            <h1>Dashboard</h1>
+        </div>
+        <h2>Add a company</h2>
+        <form action="{{ url_for('dashboard') }}" method="post">
+            <input type="text" id="company" name="company"><input type="submit" value="Submit">
+        </form>
+        {% if select_companies %}
+        <p>Found multiple matching, select from the list below the company whose stock you want to add to your
+            watchlist:</p>
+        <form action="{{ url_for('dashboard') }}" method="post">
+            {% for company in select_companies %}
+            <input id={{company.description}} type="radio" name="ticker" value="{{company.symbol}}">
+            <label for={{company.description}}>{{company.description}}</label><br>
             {% endfor %}
+            <input type="submit" value="Submit">
+        </form>
+        {% endif %}
+        <h2>Watchlist:</h2>
+        {% if data %}
+        {% for stock in data %}
+        <div class="card">
+            <h3><a href={{stock.weburl}}>{{stock.name}}</a> (${{stock.stock_price}})</h3>
+            <p>52 week high: ${{stock.ytd_high}}<br/>
+            52 week low: ${{stock.ytd_low}}<br/>
+            Price target: ${{stock.price_target}}<br/>
+            Buy recommended by {{stock.buy}} analysts, Hold recommended by {{stock.hold}} analysts, Sell recommended by {{stock.sell}} analysts.
+            </p>
+
+            {% if stock.news %}
+            <h3>Relevant news:</h3>
+            <ul>
+                {% for article in stock.news %}
+                <li><a href={{article.link}}>{{article.headline}}</a></li>
+                {% endfor %}
+            </ul>
             {% endif %}
+        </div>
+        {% endfor %}
+        {% endif %}
 
     </div>
+    <script>
+        if (window.history.replaceState) {
+            window.history.replaceState(null, null, window.location.href);
+        }
+    </script>
 </body>
 
 </html>
@@ -365,9 +378,8 @@ Create a folder called templates and a file inside it called index.html. Paste t
 Let's also create a stylesheet for the template. Create a folder called static, then another in static called styles. Now, create a file called index.css and add the following:
 ```
 body {
-    color: rgb(39, 247, 212);
-    border:2px rgb(39, 247, 212);
-
+    color: midnightblue;
+    background-color: aquamarine;
 }
 .row {
     padding-left: 20px;
@@ -378,13 +390,24 @@ body {
     clear: both;
 }
 a {
-    color: rgb(39, 247, 212);
+    color: rgb(73, 73, 211);
 }
-
+input[type="text" i]{
+  padding-left:10px;
+  padding-right: 10px;
+  padding-bottom: 5px;
+  padding-top: 5px;
+}
 input[type="submit" i] {
-    color: rgb(39, 247, 212);
-    background-color: white;
-    border: rgb(39, 247, 212);
+  color: white;
+  background-color: midnightblue;
+  border: rgb(73, 73, 211);
+  margin-left: 10px;
+  border-radius: 4px;
+  padding-left: 10px;
+  padding-right: 10px;
+  padding-bottom: 5px;
+  padding-top: 5px;
 }
 .column {
     float: left;
@@ -397,26 +420,36 @@ input[type="submit" i] {
     display: table;
     clear: both;
 }
-h1 {
+
+.header {
     text-align: center;
-}
+    color: midnightblue;
+    font-size: 30px;
+  }
 .card {
     /* Add shadows to create the "card" effect */
-    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+    box-shadow: 0 8px 16px 0 white;
     transition: 0.3s;
     padding: 10px;
+    color: white;
+    background-color: midnightblue;
+    border: aquamarine;
+    margin-bottom: 10px;
   }
   
   /* On mouse-over, add a deeper shadow */
-  .card:hover {
+.card:hover {
     box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
-  }
+}
   
-  /* Add some padding inside the card container */
-  /* .container {
+/* Add some padding inside the card container */
+.container {
     padding-left: 10px;
     padding: 2px 16px;
-  } */
+  } 
+a {
+  color: white;
+}
 ```
 This will create our front end for the app.
 
@@ -481,13 +514,25 @@ def dashboard():
         resp = requests.get(f"https://finnhub.io/api/v1/stock/profile2?symbol={stock.name}&token={API_TOKEN}").json()
         _data["weburl"] = resp["weburl"]
         resp = requests.get(f"https://finnhub.io/api/v1/company-news?symbol={stock.name}&from=2020-11-05&to=2020-11-10&token={API_TOKEN}").json()
+        news = []
         for article in resp:
             _news = {
                 "headline": article["headline"],
                 "link": article["url"]
             }
-        _data["news"].append(_news)
+            news.append(_news)
+        _data["news"] = news[:3]
+        resp = requests.get(f"https://finnhub.io/api/v1/stock/metric?symbol={stock.name}&metric=all&token={API_TOKEN}").json()
+        _data["ytd_high"] = resp["metric"]["52WeekHigh"]
+        _data["ytd_low"] = resp["metric"]["52WeekLow"]
+        resp = requests.get(f"https://finnhub.io/api/v1/stock/price-target?symbol={stock.name}&token={API_TOKEN}").json()
+        _data["price_target"] = resp["targetHigh"]
+        resp = requests.get(f"https://finnhub.io/api/v1/stock/recommendation?symbol={stock.name}&token={API_TOKEN}").json()
+        _data["buy"] = resp[0]["buy"]
+        _data["hold"] = resp[0]["hold"]
+        _data["sell"] = resp[0]["sell"]
         data.append(_data)
+
     if len(select_companies) > 1:
         return render_template("index.html", data=data, select_companies=select_companies)
     return render_template("index.html", data=data)
