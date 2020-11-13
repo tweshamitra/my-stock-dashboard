@@ -521,7 +521,7 @@ $ heroku config:set API_TOKEN=<API-TOKEN>
 
 Commit and push the changes, then run:
 ```
-$ heroku run python manage.py db upgrade --app
+$ heroku run python manage.py db upgrade
 ```
 
 Your app is ready to use!
