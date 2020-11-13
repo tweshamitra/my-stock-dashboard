@@ -185,7 +185,7 @@ $ export APP_SETTINGS=config.ProductionConfig
 $ heroku config:set APP_SETTINGS=config.ProductionConfig
 ```
 
-#### We need to make sure the app uses te correct config. So update app.py so that it looks like this:
+#### We need to make sure the app uses the correct config. So update app.py so that it looks like this:
 ```
 import os
 from flask import Flask
