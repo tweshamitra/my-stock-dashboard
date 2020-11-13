@@ -134,7 +134,7 @@ You should already have heroku and Heroku CLI installed on your computer. Login 
 $ heroku login
 ```
 
-#### Create a Procfile in the current directory
+#### Create a Procfile in the current directory(stock-dashboard, folder where we initialized the git repo)
 ```
 $ touch Procfile
 ```
