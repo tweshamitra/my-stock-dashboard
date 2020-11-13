@@ -31,20 +31,20 @@ $ brew install git
 ### Create a Finnhub account:
 To create our stock dashboard, we will need to get information via a REST API provided by Finnhub. Finnhub gives free access to some of their APIs and those will be sufficient
 for us today. I will go into more detail about REST APIs below. But first, make sure your parent has created a Finnhub account for you. If not, have them create one for you
-here: https://finnhub.io/register. 
+here: https://finnhub.io/register. Your parent will have to verify the account as well.
 
 Once the account is created, we only need the API token so can call the APIs. Once logged in, head to https://finnhub.io/dashboard and you will see a box with
 the API key. Let's save that key somewhere that is readily accessible. 
 
 ### Create a Heroku account:
 Heroku is where we will deploy our web application so that we can share it with our friends! You parent should have create an account for you already. If not,
-please have them do so right now here: https://signup.heroku.com/. Only the free account is necessary for this workshop.
+please have them do so right now here: https://signup.heroku.com/. Only the free account is necessary for this workshop. Your parent will have to verify the account after registering.
 
 ### Install Heroku CLI
 You will need the Heroku CLI to be able to deploy the app. You can find instructions on downloading that here: https://devcenter.heroku.com/articles/heroku-cli#download-and-install. 
 ### PostgreSQL
 PostgreSQL is an open source relational database that we will be using to store our data. Make sure that is downloaded on your computer as well. If not,
-have your download it here: https://www.postgresql.org/download/
+have your download it here: https://www.postgresql.org/download/. During installation, all values should be left as default.
 
 ## Let's start coding!
 
@@ -66,6 +66,7 @@ At this step, you may need to use the github credentials to log in if this is th
 $ python3.7 -m venv env
 $ source env/bin/activate
 ```
+Depending on which version of python is installed, you will have to use that one and python3.7 may not work.
 
 #### Let's set up some basics
 ```
@@ -153,6 +154,10 @@ $ echo "python-3.8.1" > runtime.txt
 #### Now, we're ready to create the Heroku app and add a remote to our local repository
 ```
 $ heroku create
+```
+In the ouput, you will see the app name after it is done being created. Then, add the remote link like below, where APP-NAME is your unique app name:
+
+```
 $ heroku git:remote -a <APP-NAME>
 ```
 
@@ -201,6 +206,12 @@ if __name__ == "__main__":
     app.run()
 ```
 Commit and push these changes now
+
+```
+$ git add .
+$ git commit -m "first commit"
+$ git push heroku master
+```
 
 ### PostgreSQL setup
 
@@ -548,8 +559,19 @@ $ export API_TOKEN=<API-TOKEN>
 $ heroku config:set API_TOKEN=<API-TOKEN>
 ```
 
+To run it locally, you can do the following as well:
+```
+$ export FLASK_APP=app
+$ flask run
+```
+
+Navigate to the localhost link using your favorite browser.
+
 Commit and push the changes, then run:
 ```
+$ git add .
+$ git commit -m <your message here>
+$ git push heroku master
 $ heroku run python manage.py db upgrade
 ```
 
