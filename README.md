@@ -126,7 +126,7 @@ if __name__ == "__main__":
 $ python app.py
 ```
 
-#### Navigate to https://127.0.0.0:5000 to view your app
+#### Navigate to https://127.0.0.1:5000 to view your app
 
 ### Heroku Setup
 You should already have heroku and Heroku CLI installed on your computer. Login with the credentials after running the below command.
