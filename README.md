@@ -36,6 +36,17 @@ here: https://finnhub.io/register. Your parent will have to verify the account a
 Once the account is created, we only need the API token so can call the APIs. Once logged in, head to https://finnhub.io/dashboard and you will see a box with
 the API key. Let's save that key somewhere that is readily accessible. 
 
+#### About REST APIs
+An API (Application Programming Interface) is essentially a set of rules for building and integrating application software. It's a contract between an information provider and an information user. A developer create the API on the server and allows the client to talk to it. it helps you comminucate what you want to the system so it can undertand and fulfill the request. REST (Representational State Transfer) is a software architecture that developers follow to implement a RESTful web service. When you make a request via a REST API, it transfers a respresentation of the state of the resource at that time to the requester. A RESTful web service requests contains an endpoint URL and an HTTP method. After you make the request, you will get a response which can be in JSON, XML, among others. In order for an API to be considered RESTful, it must follow this criteria:
+
+* a client-server architecture made up of clients, servers, and resources
+* stateless, each request must from client to server must contain all the information necessary to understand the request. 
+* the data within a response to a request must be labeled as cacheable or non-cacheable
+* a uniform interface
+* a layered system style
+
+Read more here: https://restfulapi.net/
+
 ### Create a Heroku account:
 Heroku is where we will deploy our web application so that we can share it with our friends! You parent should have create an account for you already. If not,
 please have them do so right now here: https://signup.heroku.com/. Only the free account is necessary for this workshop. Your parent will have to verify the account after registering.
